@@ -1,12 +1,11 @@
 import { FC } from 'react';
-import { FontWeights, Stack, Text, useTheme } from '@fluentui/react';
+import { FontWeights, Stack, Text } from '@fluentui/react';
 
-export type VariableListProps = {
+export type VariablesProps = {
     networkVars: Array<string>;
 };
 
-export const VariableList: FC<VariableListProps> = ({ networkVars }) => {
-    const theme = useTheme();
+export const Variables: FC<VariablesProps> = ({ networkVars }) => {
     return (
         <Stack styles={{ root: { padding: '2px', marginLeft: '10px' } }}>
             <Stack.Item>
@@ -14,7 +13,6 @@ export const VariableList: FC<VariableListProps> = ({ networkVars }) => {
                     variant="mediumPlus"
                     styles={{
                         root: {
-                            color: theme.palette.blueLight,
                             fontWeight: FontWeights.semibold,
                         },
                     }}
