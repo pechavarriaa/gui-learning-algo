@@ -38,7 +38,9 @@ export const Input: FC<InputProps> = ({ networkVars, addNewVariable }) => {
                 <Stack.Item align="start">
                     <TextField
                         autoComplete="off"
-                        styles={{ root: { width: '240px', margin: '10px' } }}
+                        styles={{
+                            root: { width: '240px', margin: '10px' },
+                        }}
                         label="Add new variable"
                         value={varName}
                         onChange={(_, newVar) => {
@@ -60,10 +62,7 @@ export const Input: FC<InputProps> = ({ networkVars, addNewVariable }) => {
                         disabled={
                             varName === '' || networkVars.includes(varName)
                         }
-                        styles={{
-                            root: { margin: '10px', padding: '2px' },
-                            rootDisabled: { backgroundColor: 'gray' },
-                        }}
+                        styles={{ root: { margin: '10px', padding: '2px' } }}
                         onClick={handleAddNewVariable}
                     />
                 </Stack.Item>
