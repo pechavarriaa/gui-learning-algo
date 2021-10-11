@@ -1,44 +1,74 @@
-import React from 'react';
-import { Stack, Text, Link, FontWeights, IStackTokens, IStackStyles, ITextStyles } from '@fluentui/react';
-import logo from './logo.svg';
+import { FC, useState } from 'react';
+import {
+    Stack,
+    Text,
+    FontWeights,
+    IStackTokens,
+    IStackStyles,
+    ThemeProvider,
+    useTheme,
+} from '@fluentui/react';
 import './App.css';
+import { darkTheme, lightTheme } from './themes';
+import { Footer } from './components/Footer';
+import { Input } from './components/Input';
+import { VariableList } from './components/VariableList';
 
-const boldStyle: Partial<ITextStyles> = { root: { fontWeight: FontWeights.semibold } };
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
-  root: {
-    width: '960px',
-    margin: '0 auto',
-    textAlign: 'center',
-    color: '#605e5c',
-  },
+    root: {
+        width: '100vw',
+        margin: '0 auto',
+        padding: '3vh 10vw',
+        textAlign: 'center',
+        minHeight: '90vh',
+    },
 };
 
-export const App: React.FunctionComponent = () => {
-  return (
-    <Stack horizontalAlign="center" verticalAlign="center" verticalFill styles={stackStyles} tokens={stackTokens}>
-      <img className="App-logo" src={logo} alt="logo" />
-      <Text variant="xxLarge" styles={boldStyle}>
-        Welcome to your Fluent UI app
-      </Text>
-      <Text variant="large">For a guide on how to customize this project, check out the Fluent UI documentation.</Text>
-      <Text variant="large" styles={boldStyle}>
-        Essential links
-      </Text>
-      <Stack horizontal tokens={stackTokens} horizontalAlign="center">
-        <Link href="https://developer.microsoft.com/en-us/fluentui#/get-started/web">Docs</Link>
-        <Link href="https://stackoverflow.com/questions/tagged/office-ui-fabric">Stack Overflow</Link>
-        <Link href="https://github.com/microsoft/fluentui/">Github</Link>
-        <Link href="https://twitter.com/fluentui">Twitter</Link>
-      </Stack>
-      <Text variant="large" styles={boldStyle}>
-        Design system
-      </Text>
-      <Stack horizontal tokens={stackTokens} horizontalAlign="center">
-        <Link href="https://developer.microsoft.com/en-us/fluentui#/styles/web/icons">Icons</Link>
-        <Link href="https://developer.microsoft.com/en-us/fluentui#/styles/web">Styles</Link>
-        <Link href="https://aka.ms/themedesigner">Theme designer</Link>
-      </Stack>
-    </Stack>
-  );
+export const App: FC = () => {
+    const [isLightThemed, setIsLightThemed] = useState(false);
+    const [networkVars, setNetworkVars] = useState<string[]>([]);
+    const setTheme = () => {
+        setIsLightThemed(!isLightThemed);
+    };
+    const theme = useTheme();
+    const footerProps = {
+        isLightThemed,
+        setTheme,
+    };
+    const addNewVariable = (newVar: string) => {
+        setNetworkVars([...networkVars, newVar]);
+    };
+
+    return (
+        <ThemeProvider theme={isLightThemed ? lightTheme : darkTheme}>
+            <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
+                <Stack.Item>
+                    <Text
+                        variant="xLarge"
+                        styles={{
+                            root: {
+                                color: theme.palette.blueLight,
+                                fontWeight: FontWeights.semibold,
+                            },
+                        }}
+                    >
+                        Allen's Interval Algebra Learning Algorithm
+                    </Text>
+                </Stack.Item>
+
+                <Stack.Item align="start">
+                    <Input
+                        networkVars={networkVars}
+                        addNewVariable={addNewVariable}
+                    />
+                </Stack.Item>
+                <Stack.Item align="start">
+                    <VariableList networkVars={networkVars} />
+                </Stack.Item>
+            </Stack>
+
+            <Footer {...footerProps} />
+        </ThemeProvider>
+    );
 };
