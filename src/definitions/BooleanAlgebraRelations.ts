@@ -1,0 +1,15 @@
+export const BooleanAlgebraRelations = {
+    Precedes: 'Precedes',
+    Meets: 'Meets',
+    Overlaps: 'Overlaps',
+    'Finished by': 'Finished_by',
+    Contains: 'Contains',
+    Start: 'Start',
+    Equal: 'Equal',
+    'Started by': 'Started_by',
+    During: 'During',
+    Finishes: 'Finishes',
+    'Overlapped by': 'Overlapped_by',
+    'Met by': 'Met_by',
+    'Preceded by': 'Preceded_by',
+};
