@@ -35,6 +35,8 @@ export const App: FC = () => {
         NetworkRelations: [],
     });
     const [inputMode, setInputMode] = useState<boolean>(true);
+    const [isNetworkConstrained, setIsNetworkConstrained] =
+        useState<boolean>(false);
     const setTheme = () => {
         setIsLightThemed(!isLightThemed);
     };
@@ -87,11 +89,12 @@ export const App: FC = () => {
                         <Variables networkVars={network.Variables} />
                     </Stack.Item>
                 )}
-                {!inputMode && (
+                {!inputMode && !isNetworkConstrained && (
                     <Stack.Item align="start">
                         <Queries
                             network={network}
                             setNetwork={setNetwork}
+                            setIsNetworkConstrained={setIsNetworkConstrained}
                         />
                     </Stack.Item>
                 )}
