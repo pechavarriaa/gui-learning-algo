@@ -14,14 +14,14 @@ export const createInitialNetworkRelations = (
     for (let x = 0; x < variables.length; x++) {
         for (let y = x + 1; y < variables.length; y++) {
             initialNetworkRelations.push({
-                FirstVar: variables[x],
-                SecondVar: variables[y],
-                Relations: bars,
+                firstVar: variables[x],
+                secondVar: variables[y],
+                relations: bars,
             });
             inverseNetworkRelations.push({
-                FirstVar: variables[y],
-                SecondVar: variables[x],
-                Relations: bars,
+                firstVar: variables[y],
+                secondVar: variables[x],
+                relations: bars,
             });
         }
     }
