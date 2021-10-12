@@ -7,15 +7,24 @@ import {
     useTheme,
 } from '@fluentui/react';
 import Network from '../definitions/Network';
-import { BooleanAlgebraRelations } from '../definitions/BooleanAlgebraRelations';
-import { grammarQuestionForBAR } from '../definitions/BooleanAlgebraRelations';
+import {
+    BooleanAlgebraRelations,
+    grammarQuestionForBAR,
+    InverseBAR,
+} from '../definitions/BooleanAlgebraRelations';
+import Relationship from '../definitions/Relationship';
 
 export type QueriesProps = {
     network: Network;
     setNetwork: (network: Network) => void;
+    setIsNetworkConstrained: (isNetworkConstrained: boolean) => void;
 };
 
-export const Queries: FC<QueriesProps> = ({ network, setNetwork }) => {
+export const Queries: FC<QueriesProps> = ({
+    network,
+    setNetwork,
+    setIsNetworkConstrained,
+}) => {
     const theme = useTheme();
     const stackItemStyles = { root: { margin: '5px' } };
     const buttonStyles = {
@@ -28,9 +37,10 @@ export const Queries: FC<QueriesProps> = ({ network, setNetwork }) => {
     const [currentNetworkRelation, setCurrentNetworkRelation] =
         useState<number>(0);
     const [currentRelation, setCurrentRelation] = useState<number>(0);
+    const [atLeastTwoPairs, setAtLeastTwoPairs] = useState<boolean>(true);
 
     const getCurrentRelation = () => {
-        return network.NetworkRelations[currentNetworkRelation].Relations[
+        return network.NetworkRelations[currentNetworkRelation].relations[
             currentRelation
         ];
     };
@@ -55,16 +65,15 @@ export const Queries: FC<QueriesProps> = ({ network, setNetwork }) => {
                 >
                     {`${grammarQuestionForBAR[getCurrentRelation()]} "${
                         network.NetworkRelations[currentNetworkRelation]
-                            .FirstVar
+                            .firstVar
                     }" ${BooleanAlgebraRelations[getCurrentRelation()]}
                     "${
                         network.NetworkRelations[currentNetworkRelation]
-                            .SecondVar
+                            .secondVar
                     }"?`}
                 </Text>
             </Stack>
             <Stack horizontal>
-                {' '}
                 <Stack.Item styles={stackItemStyles}>
                     <DefaultButton
                         text="Yes"
@@ -74,6 +83,25 @@ export const Queries: FC<QueriesProps> = ({ network, setNetwork }) => {
                                 padding: '2px',
                                 backgroundColor: theme.palette.green,
                             },
+                        }}
+                        onClick={() => {
+                            filterNetworkRelations(
+                                true,
+                                currentRelation,
+                                currentNetworkRelation,
+                                network,
+                                setNetwork
+                            );
+                            setNextQuestion(
+                                true,
+                                network,
+                                currentRelation,
+                                currentNetworkRelation,
+                                setCurrentRelation,
+                                setCurrentNetworkRelation,
+                                setIsNetworkConstrained,
+                                setAtLeastTwoPairs
+                            );
                         }}
                     />
                 </Stack.Item>
@@ -88,7 +116,23 @@ export const Queries: FC<QueriesProps> = ({ network, setNetwork }) => {
                             },
                         }}
                         onClick={() => {
-                            setPropagatedNetwork(network, setNetwork);
+                            filterNetworkRelations(
+                                false,
+                                currentRelation,
+                                currentNetworkRelation,
+                                network,
+                                setNetwork
+                            );
+                            setNextQuestion(
+                                true,
+                                network,
+                                currentRelation,
+                                currentNetworkRelation,
+                                setCurrentRelation,
+                                setCurrentNetworkRelation,
+                                setIsNetworkConstrained,
+                                setAtLeastTwoPairs
+                            );
                         }}
                     />
                 </Stack.Item>
@@ -103,33 +147,37 @@ export const Queries: FC<QueriesProps> = ({ network, setNetwork }) => {
                                 currentRelation,
                                 currentNetworkRelation,
                                 setCurrentRelation,
-                                setCurrentNetworkRelation
+                                setCurrentNetworkRelation,
+                                setIsNetworkConstrained,
+                                setAtLeastTwoPairs
                             )
                         }
                     />
                 </Stack.Item>
-                <Stack.Item styles={stackItemStyles}>
-                    <DefaultButton
-                        text="Next Pair"
-                        styles={buttonStyles}
-                        onClick={() =>
-                            setNextQuestion(
-                                true,
-                                network,
-                                currentRelation,
-                                currentNetworkRelation,
-                                setCurrentRelation,
-                                setCurrentNetworkRelation
-                            )
-                        }
-                    />
-                </Stack.Item>
+                {atLeastTwoPairs && (
+                    <Stack.Item styles={stackItemStyles}>
+                        <DefaultButton
+                            text="Next Pair"
+                            styles={buttonStyles}
+                            onClick={() =>
+                                setNextQuestion(
+                                    true,
+                                    network,
+                                    currentRelation,
+                                    currentNetworkRelation,
+                                    setCurrentRelation,
+                                    setCurrentNetworkRelation,
+                                    setIsNetworkConstrained,
+                                    setAtLeastTwoPairs
+                                )
+                            }
+                        />
+                    </Stack.Item>
+                )}
             </Stack>
         </Stack>
     );
 };
-
-// const filterOnAnswer = () => {};
 
 const setNextQuestion = (
     nextPair: boolean,
@@ -137,53 +185,135 @@ const setNextQuestion = (
     currentRelation: number,
     currentNetworkRelation: number,
     setCurrentRelation: (currentRelation: number) => void,
-    setCurrentNetworkRelation: (currentNetworkRelation: number) => void
+    setCurrentNetworkRelation: (currentNetworkRelation: number) => void,
+    setIsNetworkConstrained: (isNetworkConstrained: boolean) => void,
+    setAtLeastTwoPairs: (atLeastTwoPairs: boolean) => void
 ): void => {
-    if (nextPair === true) {
-        if (
-            currentNetworkRelation + 1 ===
-            network.NetworkRelations.length / 2
-        ) {
-            setCurrentNetworkRelation(0);
-            setCurrentRelation(0);
-        } else {
-            setCurrentNetworkRelation(currentNetworkRelation + 1);
-            setCurrentRelation(0);
+    let numberOfConstrainedRelations = 1;
+    for (let x = 0; x < network.NetworkRelations.length / 2; x++) {
+        if (network.NetworkRelations[x].relations.length === 1) {
+            numberOfConstrainedRelations++;
         }
+    }
+    if (numberOfConstrainedRelations === network.NetworkRelations.length / 2) {
+        setIsNetworkConstrained(true);
+        return;
+    }
+    if (
+        numberOfConstrainedRelations + 1 ===
+        network.NetworkRelations.length / 2
+    ) {
+        setAtLeastTwoPairs(false);
+    }
+
+    const getNextPair = (netRelations: Array<Relationship>): number => {
+        let x = 1;
+        while (
+            netRelations[
+                (x + currentNetworkRelation) % (netRelations.length / 2)
+            ].relations.length === 1
+        ) {
+            x++;
+        }
+        return (x + currentNetworkRelation) % (netRelations.length / 2);
+    };
+
+    if (
+        nextPair === true ||
+        currentRelation + 1 ===
+            network.NetworkRelations[currentNetworkRelation].relations.length
+    ) {
+        const nextPairOfVars = getNextPair(network.NetworkRelations);
+        setCurrentNetworkRelation(nextPairOfVars);
+        setCurrentRelation(0);
     } else {
-        if (
-            currentRelation + 1 ===
-            network.NetworkRelations[currentNetworkRelation].Relations.length
-        ) {
-            if (
-                currentNetworkRelation + 1 ===
-                network.NetworkRelations.length / 2
-            ) {
-                setCurrentNetworkRelation(0);
-                setCurrentRelation(0);
-            } else {
-                setCurrentNetworkRelation(currentNetworkRelation + 1);
-                setCurrentRelation(0);
-            }
-        } else {
-            setCurrentRelation(currentRelation + 1);
-        }
+        setCurrentRelation(currentRelation + 1);
     }
 };
 
-const setPropagatedNetwork = (
+const filterNetworkRelations = (
+    positiveAnswer: boolean,
+    currentRelation: number,
+    currentNetworkRelation: number,
     network: Network,
     setNetwork: (network: Network) => void
-): void => {
-    const { Variables, NetworkRelations } = network;
-    let propagatedNetwork: Network = network;
+) => {
+    const indexOfInverseRelation =
+        currentNetworkRelation + network.NetworkRelations.length / 2;
+    let filteredNetworkRelations: Array<Relationship> = [];
+    for (let x = 0; x < network.NetworkRelations.length; x++) {
+        if (x !== currentNetworkRelation && x !== indexOfInverseRelation) {
+            filteredNetworkRelations.push(network.NetworkRelations[x]);
+        } else {
+            const allenKey =
+                x === currentNetworkRelation
+                    ? network.NetworkRelations[x].relations[currentRelation]
+                    : InverseBAR[
+                          network.NetworkRelations[x].relations[currentRelation]
+                      ];
+            let newRelationsForTuple: Relationship = {
+                firstVar: network.NetworkRelations[x].firstVar,
+                secondVar: network.NetworkRelations[x].secondVar,
+                relations: network.NetworkRelations[x].relations.filter((rel) =>
+                    positiveAnswer ? rel === allenKey : rel !== allenKey
+                ),
+            };
+            filteredNetworkRelations.push(newRelationsForTuple);
+        }
+    }
+    let propagatedNetworkRelations: Array<Relationship> = [];
+    let requestFailed = false;
     fetch('https://localhost:5001/BooleanAlgebra/constraintNetwork', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Variables, NetworkRelations }),
+        body: JSON.stringify({
+            Variables: network.Variables,
+            NetworkRelations: filteredNetworkRelations,
+        }),
     })
         .then((response) => response.json())
-        .then((data) => (propagatedNetwork = data));
+        .then((data) => {
+            propagatedNetworkRelations = data.networkRelations;
+        })
+        .catch(() => (requestFailed = true))
+        .finally(() => {
+            if (!requestFailed) {
+                setPropagatedNetwork(
+                    propagatedNetworkRelations,
+                    network.NetworkRelations,
+                    network.Variables,
+                    setNetwork
+                );
+            }
+        });
+};
 
-    setNetwork(propagatedNetwork);
+const setPropagatedNetwork = (
+    propagatedRelations: Array<Relationship>,
+    networkRelations: Array<Relationship>,
+    variables: Array<string>,
+    setNetwork: (network: Network) => void
+) => {
+    let finalNetworkRelations: Array<Relationship> = [];
+    for (let x = 0; x < networkRelations.length; x++) {
+        for (let y = 0; y < propagatedRelations.length; y++) {
+            if (
+                networkRelations[x].firstVar ===
+                    propagatedRelations[y].firstVar &&
+                networkRelations[x].secondVar ===
+                    propagatedRelations[y].secondVar
+            ) {
+                finalNetworkRelations.push({
+                    firstVar: networkRelations[x].firstVar,
+                    secondVar: networkRelations[x].secondVar,
+                    relations: propagatedRelations[y].relations,
+                });
+                break;
+            }
+        }
+    }
+    setNetwork({
+        Variables: variables,
+        NetworkRelations: finalNetworkRelations,
+    });
 };
