@@ -12,7 +12,10 @@ import './App.css';
 import { darkTheme, lightTheme } from './themes';
 import { Footer } from './components/Footer';
 import { Input } from './components/Input';
-import { VariableList } from './components/VariableList';
+import { Variables } from './components/Variables';
+import { Queries } from './components/Queries';
+import Network from './definitions/Network';
+import { createInitialNetworkRelations } from './utilities/createInitialNetwork';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -27,7 +30,11 @@ const stackStyles: Partial<IStackStyles> = {
 
 export const App: FC = () => {
     const [isLightThemed, setIsLightThemed] = useState(false);
-    const [networkVars, setNetworkVars] = useState<string[]>([]);
+    const [network, setNetwork] = useState<Network>({
+        Variables: [],
+        NetworkRelations: [],
+    });
+    const [inputMode, setInputMode] = useState<boolean>(true);
     const setTheme = () => {
         setIsLightThemed(!isLightThemed);
     };
@@ -37,7 +44,18 @@ export const App: FC = () => {
         setTheme,
     };
     const addNewVariable = (newVar: string) => {
-        setNetworkVars([...networkVars, newVar]);
+        setNetwork({
+            Variables: [...network.Variables, newVar],
+            NetworkRelations: network.NetworkRelations,
+        });
+        setInputMode(true);
+    };
+
+    const startQuestions = () => {
+        if (network.Variables.length > 1) {
+            setInputMode(false);
+            setNetwork(createInitialNetworkRelations(network.Variables));
+        }
     };
 
     return (
@@ -48,7 +66,7 @@ export const App: FC = () => {
                         variant="xLarge"
                         styles={{
                             root: {
-                                color: theme.palette.blueLight,
+                                color: theme.palette.tealLight,
                                 fontWeight: FontWeights.semibold,
                             },
                         }}
@@ -56,18 +74,28 @@ export const App: FC = () => {
                         Allen's Interval Algebra Learning Algorithm
                     </Text>
                 </Stack.Item>
-
                 <Stack.Item align="start">
                     <Input
-                        networkVars={networkVars}
+                        networkVars={network.Variables}
+                        inputMode={inputMode}
                         addNewVariable={addNewVariable}
+                        startQuestions={startQuestions}
                     />
                 </Stack.Item>
-                <Stack.Item align="start">
-                    <VariableList networkVars={networkVars} />
-                </Stack.Item>
+                {network.Variables.length > 0 && (
+                    <Stack.Item align="start">
+                        <Variables networkVars={network.Variables} />
+                    </Stack.Item>
+                )}
+                {!inputMode && (
+                    <Stack.Item align="start">
+                        <Queries
+                            network={network}
+                            setNetwork={setNetwork}
+                        />
+                    </Stack.Item>
+                )}
             </Stack>
-
             <Footer {...footerProps} />
         </ThemeProvider>
     );

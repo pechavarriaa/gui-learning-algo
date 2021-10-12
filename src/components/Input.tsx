@@ -3,10 +3,17 @@ import { FC, useState, useEffect, useCallback } from 'react';
 
 export type InputProps = {
     networkVars: Array<string>;
+    inputMode: boolean;
     addNewVariable: (newVar: string) => void;
+    startQuestions: () => void;
 };
 
-export const Input: FC<InputProps> = ({ networkVars, addNewVariable }) => {
+export const Input: FC<InputProps> = ({
+    networkVars,
+    inputMode,
+    addNewVariable,
+    startQuestions,
+}) => {
     const [varName, setVarName] = useState('');
 
     const handleAddNewVariable = useCallback(() => {
@@ -64,6 +71,17 @@ export const Input: FC<InputProps> = ({ networkVars, addNewVariable }) => {
                         }
                         styles={{ root: { margin: '10px', padding: '2px' } }}
                         onClick={handleAddNewVariable}
+                    />
+                </Stack.Item>
+                <Stack.Item
+                    align="start"
+                    styles={{ root: { marginTop: '28px' } }}
+                >
+                    <PrimaryButton
+                        text="Begin Algorithm"
+                        disabled={networkVars.length < 2 || !inputMode}
+                        styles={{ root: { margin: '10px', padding: '2px' } }}
+                        onClick={startQuestions}
                     />
                 </Stack.Item>
             </Stack>
