@@ -29,6 +29,22 @@ export const BooleanAlgebraRelations = {
     Preceded_by: 'Preceded by',
 };
 
+export const InverseBAR = {
+    Precedes: 'Preceded_by',
+    Preceded_by: 'Precedes',
+    Meets: 'Met_by',
+    Met_by: 'Meets',
+    Overlaps: 'Overlapped_by',
+    Overlapped_by: 'Overlaps',
+    Finished_by: 'Finishes',
+    Finishes: 'Finished_by',
+    Contains: 'During',
+    During: 'Contains',
+    Start: 'Started_by',
+    Started_by: 'Start',
+    Equal: 'Equal',
+};
+
 export const grammarQuestionForBAR = {
     Precedes: 'Does',
     Meets: 'Does',
