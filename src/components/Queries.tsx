@@ -90,13 +90,7 @@ export const Queries: FC<QueriesProps> = ({
                                 currentRelation,
                                 currentNetworkRelation,
                                 network,
-                                setNetwork
-                            );
-                            setNextQuestion(
-                                true,
-                                network,
-                                currentRelation,
-                                currentNetworkRelation,
+                                setNetwork,
                                 setCurrentRelation,
                                 setCurrentNetworkRelation,
                                 setIsNetworkConstrained,
@@ -121,13 +115,7 @@ export const Queries: FC<QueriesProps> = ({
                                 currentRelation,
                                 currentNetworkRelation,
                                 network,
-                                setNetwork
-                            );
-                            setNextQuestion(
-                                true,
-                                network,
-                                currentRelation,
-                                currentNetworkRelation,
+                                setNetwork,
                                 setCurrentRelation,
                                 setCurrentNetworkRelation,
                                 setIsNetworkConstrained,
@@ -188,8 +176,8 @@ const setNextQuestion = (
     setCurrentNetworkRelation: (currentNetworkRelation: number) => void,
     setIsNetworkConstrained: (isNetworkConstrained: boolean) => void,
     setAtLeastTwoPairs: (atLeastTwoPairs: boolean) => void
-): void => {
-    let numberOfConstrainedRelations = 1;
+) => {
+    let numberOfConstrainedRelations = 0;
     for (let x = 0; x < network.NetworkRelations.length / 2; x++) {
         if (network.NetworkRelations[x].relations.length === 1) {
             numberOfConstrainedRelations++;
@@ -236,7 +224,11 @@ const filterNetworkRelations = (
     currentRelation: number,
     currentNetworkRelation: number,
     network: Network,
-    setNetwork: (network: Network) => void
+    setNetwork: (network: Network) => void,
+    setCurrentRelation: (currentRelation: number) => void,
+    setCurrentNetworkRelation: (currentNetworkRelation: number) => void,
+    setIsNetworkConstrained: (isNetworkConstrained: boolean) => void,
+    setAtLeastTwoPairs: (atLeastTwoPairs: boolean) => void
 ) => {
     const indexOfInverseRelation =
         currentNetworkRelation + network.NetworkRelations.length / 2;
@@ -278,11 +270,21 @@ const filterNetworkRelations = (
         .catch(() => (requestFailed = true))
         .finally(() => {
             if (!requestFailed) {
-                setPropagatedNetwork(
+                const propagatedNetwork = setPropagatedNetwork(
                     propagatedNetworkRelations,
                     network.NetworkRelations,
-                    network.Variables,
-                    setNetwork
+                    network.Variables
+                );
+                setNetwork(propagatedNetwork);
+                setNextQuestion(
+                    true,
+                    propagatedNetwork,
+                    currentRelation,
+                    currentNetworkRelation,
+                    setCurrentRelation,
+                    setCurrentNetworkRelation,
+                    setIsNetworkConstrained,
+                    setAtLeastTwoPairs
                 );
             }
         });
@@ -291,9 +293,8 @@ const filterNetworkRelations = (
 const setPropagatedNetwork = (
     propagatedRelations: Array<Relationship>,
     networkRelations: Array<Relationship>,
-    variables: Array<string>,
-    setNetwork: (network: Network) => void
-) => {
+    variables: Array<string>
+): Network => {
     let finalNetworkRelations: Array<Relationship> = [];
     for (let x = 0; x < networkRelations.length; x++) {
         for (let y = 0; y < propagatedRelations.length; y++) {
@@ -312,8 +313,8 @@ const setPropagatedNetwork = (
             }
         }
     }
-    setNetwork({
+    return {
         Variables: variables,
         NetworkRelations: finalNetworkRelations,
-    });
+    };
 };
