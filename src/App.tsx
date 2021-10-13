@@ -16,11 +16,13 @@ import { Variables } from './components/Variables';
 import { Queries } from './components/Queries';
 import Network from './definitions/Network';
 import { createInitialNetworkRelations } from './utilities/createInitialNetwork';
+import { Graph } from './components/Graph';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
     root: {
         width: '100vw',
+        maxWidth: '100%',
         margin: '0 auto',
         padding: '3vh 10vw',
         textAlign: 'center',
@@ -51,6 +53,7 @@ export const App: FC = () => {
             NetworkRelations: network.NetworkRelations,
         });
         setInputMode(true);
+        setIsNetworkConstrained(false);
     };
 
     const startQuestions = () => {
@@ -96,6 +99,11 @@ export const App: FC = () => {
                             setNetwork={setNetwork}
                             setIsNetworkConstrained={setIsNetworkConstrained}
                         />
+                    </Stack.Item>
+                )}
+                {network.Variables.length > 1 && !inputMode && (
+                    <Stack.Item align="center">
+                        <Graph network={network} />
                     </Stack.Item>
                 )}
             </Stack>
