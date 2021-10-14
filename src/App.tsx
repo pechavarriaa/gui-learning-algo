@@ -17,6 +17,7 @@ import { Queries } from './components/Queries';
 import Network from './definitions/Network';
 import { createInitialNetworkRelations } from './utilities/createInitialNetwork';
 import { Graph } from './components/Graph';
+import { TableOfEquivalences } from './components/TableOfEquivalences';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -107,6 +108,7 @@ export const App: FC = () => {
                     </Stack.Item>
                 )}
             </Stack>
+            <TableOfEquivalences />
             <Footer {...footerProps} />
         </ThemeProvider>
     );

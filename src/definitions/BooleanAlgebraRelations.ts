@@ -13,7 +13,11 @@ export type BAR =
     | 'Met_by'
     | 'Preceded_by';
 
-export const BooleanAlgebraRelations = {
+export type BARDict = {
+    [key: string]: string | number;
+};
+
+export const BooleanAlgebraRelations: BARDict = {
     Precedes: 'Precedes',
     Meets: 'Meets',
     Overlaps: 'Overlaps',
@@ -29,7 +33,7 @@ export const BooleanAlgebraRelations = {
     Preceded_by: 'Preceded by',
 };
 
-export const InverseBAR = {
+export const InverseBAR: BARDict = {
     Precedes: 'Preceded_by',
     Preceded_by: 'Precedes',
     Meets: 'Met_by',
@@ -45,7 +49,7 @@ export const InverseBAR = {
     Equal: 'Equal',
 };
 
-export const grammarQuestionForBAR = {
+export const grammarQuestionForBAR: BARDict = {
     Precedes: 'Does',
     Meets: 'Does',
     Overlaps: 'Does',
@@ -61,7 +65,7 @@ export const grammarQuestionForBAR = {
     Preceded_by: 'Is',
 };
 
-export const enumOfBAR = {
+export const enumOfBAR: BARDict = {
     Precedes: 1,
     Meets: 2,
     Overlaps: 3,
