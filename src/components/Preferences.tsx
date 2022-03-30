@@ -1,52 +1,96 @@
-import { FontWeights, Stack, Text, Theme } from '@fluentui/react';
+import {
+    FontWeights,
+    Stack,
+    Text,
+    DefaultButton,
+    useTheme,
+} from '@fluentui/react';
 import { FC } from 'react';
 import { SortableList } from './SortableList';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import Relationship from '../definitions/Relationship';
+import Network from '../definitions/Network';
+import { PreferenceByRelation } from './PreferenceByRelation';
+import { solveNetwork } from '../utilities/solveNetwork';
 
 export type PreferencesProps = {
-    theme: Theme;
-    networkRelations: Array<Relationship>;
+    network: Network;
+    setNetwork: (network: Network) => void;
+    setIsNetworkConstrained: (isNetworkConstrained: boolean) => void;
 };
 
 export const Preferences: FC<PreferencesProps> = ({
-    networkRelations,
-    theme,
+    network,
+    setNetwork,
+    setIsNetworkConstrained,
 }) => {
-    const firstHalfNetworkRelations = networkRelations.splice(
-        0,
-        networkRelations.length / 2
-    );
     return (
-        <Stack>
-            <Stack.Item
-                align="start"
-                styles={{
-                    root: {
-                        marginBottom: '10px',
-                    },
-                }}
-            >
-                <Text
-                    variant="mediumPlus"
+        <Stack horizontal gap={'30px'}>
+            <Stack>
+                <Stack.Item
+                    align="start"
                     styles={{
                         root: {
-                            color: theme.palette.tealLight,
-                            fontWeight: FontWeights.semibold,
+                            marginBottom: '10px',
                         },
                     }}
                 >
-                    Preference of relations
-                </Text>
-            </Stack.Item>
-            <Stack.Item align="start">
-                <DndProvider backend={HTML5Backend}>
-                    <SortableList
-                        networkRelations={firstHalfNetworkRelations}
+                    <Text
+                        variant="mediumPlus"
+                        styles={{
+                            root: {
+                                fontWeight: FontWeights.semibold,
+                            },
+                        }}
+                    >
+                        Preference of relations
+                    </Text>
+                </Stack.Item>
+                <Stack.Item align="start">
+                    <DndProvider backend={HTML5Backend}>
+                        <SortableList
+                            network={network}
+                            setNetwork={setNetwork}
+                        />
+                    </DndProvider>
+                </Stack.Item>
+            </Stack>
+            <Stack styles={{ root: { marginLeft: '20px' } }}>
+                <PreferenceByRelation
+                    network={network}
+                    setNetwork={setNetwork}
+                />
+            </Stack>
+            <Stack styles={{ root: { marginLeft: '20px' } }}>
+                <Stack.Item align="start">
+                    <Text
+                        variant="mediumPlus"
+                        styles={{
+                            root: {
+                                fontWeight: FontWeights.semibold,
+                            },
+                        }}
+                    >
+                        Solve Network
+                    </Text>
+                </Stack.Item>
+                <Stack.Item align="start">
+                    <DefaultButton
+                        styles={{
+                            root: {
+                                margin: '5px',
+                                padding: '2px 30px',
+                                backgroundColor: useTheme().palette.tealLight,
+                            },
+                        }}
+                        text="Solve"
+                        onClick={() => {
+                            solveNetwork(network, setNetwork);
+                            setIsNetworkConstrained(true);
+                        }}
                     />
-                </DndProvider>
-            </Stack.Item>
+                </Stack.Item>
+            </Stack>
         </Stack>
     );
 };
