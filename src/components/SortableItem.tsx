@@ -10,7 +10,7 @@ const style = {
     border: '1px dashed gray',
     padding: '0.5rem 1rem',
     marginBottom: '.5rem',
-    backgroundColor: '#C669FF',
+    backgroundColor: '#5A96FF',
     cursor: 'move',
 };
 
