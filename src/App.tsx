@@ -18,6 +18,7 @@ import Network from './definitions/Network';
 import { createInitialNetworkRelations } from './utilities/createInitialNetwork';
 import { Graph } from './components/Graph';
 import { TableOfEquivalences } from './components/TableOfEquivalences';
+import { Preferences } from './components/Preferences';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -92,6 +93,12 @@ export const App: FC = () => {
                     <Stack.Item align="start">
                         <Variables networkVars={network.Variables} />
                     </Stack.Item>
+                )}
+                {network.Variables.length / 2 > 1 && !inputMode && (
+                    <Preferences
+                        networkRelations={[...network.NetworkRelations]}
+                        theme={theme}
+                    />
                 )}
                 {!inputMode && !isNetworkConstrained && (
                     <Stack.Item align="start">
