@@ -94,12 +94,15 @@ export const App: FC = () => {
                         <Variables networkVars={network.Variables} />
                     </Stack.Item>
                 )}
-                {network.Variables.length / 2 > 1 && !inputMode && (
-                    <Preferences
-                        networkRelations={[...network.NetworkRelations]}
-                        theme={theme}
-                    />
-                )}
+                {network.Variables.length / 2 > 1 &&
+                    !inputMode &&
+                    !isNetworkConstrained && (
+                        <Preferences
+                            network={network}
+                            setNetwork={setNetwork}
+                            setIsNetworkConstrained={setIsNetworkConstrained}
+                        />
+                    )}
                 {!inputMode && !isNetworkConstrained && (
                     <Stack.Item align="start">
                         <Queries
