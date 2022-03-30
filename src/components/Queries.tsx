@@ -290,7 +290,7 @@ const filterNetworkRelations = (
         });
 };
 
-const setPropagatedNetwork = (
+export const setPropagatedNetwork = (
     propagatedRelations: Array<Relationship>,
     networkRelations: Array<Relationship>,
     variables: Array<string>
