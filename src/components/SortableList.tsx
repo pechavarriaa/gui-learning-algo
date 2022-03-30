@@ -1,7 +1,7 @@
 import { FC, useState, useCallback } from 'react';
 import { SortableItem } from './SortableItem';
 import update from 'immutability-helper';
-import Relationship from '../definitions/Relationship';
+import Network from '../definitions/Network';
 
 const style = {
     width: 250,
@@ -13,14 +13,21 @@ export interface Item {
 }
 
 export type SortableListProps = {
-    networkRelations: Array<Relationship>;
+    network: Network;
+    setNetwork: (network: Network) => void;
 };
 
-export const SortableList: FC<SortableListProps> = ({ networkRelations }) => {
-    const networkRels = networkRelations.map((rel, i) => ({
-        id: i,
-        text: `${rel.firstVar}-${rel.secondVar}`,
-    }));
+export const SortableList: FC<SortableListProps> = ({
+    network,
+    setNetwork,
+}) => {
+    const networkRels = [...network.NetworkRelations]
+        .splice(0, network.NetworkRelations.length / 2)
+        .map((rel, i) => ({
+            id: i,
+            text: `${rel.firstVar}-${rel.secondVar}`,
+        }));
+
     const [netRels, setNetRels] = useState(networkRels);
 
     const moveCard = useCallback(
@@ -33,9 +40,13 @@ export const SortableList: FC<SortableListProps> = ({ networkRelations }) => {
                     ],
                 })
             );
-            console.log(netRels);
+            let { Variables, NetworkRelations } = { ...network };
+            let dragRel = NetworkRelations[dragIndex];
+            NetworkRelations.splice(dragIndex, 1);
+            NetworkRelations.splice(hoverIndex, 0, dragRel);
+            setNetwork({ Variables, NetworkRelations });
         },
-        [setNetRels, netRels]
+        [setNetRels, setNetwork, network]
     );
 
     const renderCard = useCallback(
