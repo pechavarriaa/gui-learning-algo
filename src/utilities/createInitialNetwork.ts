@@ -16,12 +16,12 @@ export const createInitialNetworkRelations = (
             initialNetworkRelations.push({
                 firstVar: variables[x],
                 secondVar: variables[y],
-                relations: bars,
+                relations: [...bars],
             });
             inverseNetworkRelations.push({
                 firstVar: variables[y],
                 secondVar: variables[x],
-                relations: bars,
+                relations: [...bars],
             });
         }
     }
