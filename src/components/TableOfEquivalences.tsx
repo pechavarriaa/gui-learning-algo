@@ -31,8 +31,8 @@ export const TableOfEquivalences: FC = () => {
                 </tr>
             </thead>
             <tbody>
-                {Object.entries(enumOfBAR).map(([BarAsString, BarAsNumber]) => (
-                    <tr>
+                {Object.entries(enumOfBAR).map(([BarAsString, BarAsNumber], i) => (
+                    <tr key={i}>
                         <td style={tableCellStyle}>{BarAsNumber}</td>
                         <td style={tableCellStyle}>
                             {BooleanAlgebraRelations[BarAsString]}
