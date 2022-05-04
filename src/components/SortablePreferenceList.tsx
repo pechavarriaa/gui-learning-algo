@@ -1,17 +1,11 @@
 import { FC, useCallback } from 'react';
 import { SortableItem } from './SortableItem';
-// import update from 'immutability-helper';
 import Network from '../definitions/Network';
 
 const style = {
     width: 300,
     marginTop: '10px',
 };
-
-export interface Item {
-    id: number;
-    text: string;
-}
 
 export type SortablePreferenceListProps = {
     selectedIndex: number;
