@@ -6,7 +6,7 @@ import {
     IStackTokens,
     IStackStyles,
     ThemeProvider,
-    useTheme,
+    useTheme
 } from '@fluentui/react';
 import './App.css';
 import { darkTheme, lightTheme } from './themes';
@@ -19,6 +19,7 @@ import { createInitialNetworkRelations } from './utilities/createInitialNetwork'
 import { Graph } from './components/Graph';
 import { TableOfEquivalences } from './components/TableOfEquivalences';
 import { Preferences } from './components/Preferences';
+import { ConditionalPreferences } from './components/ConditionalPreferences';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -97,11 +98,16 @@ export const App: FC = () => {
                 {network.Variables.length / 2 > 1 &&
                     !inputMode &&
                     !isNetworkConstrained && (
-                        <Preferences
-                            network={network}
-                            setNetwork={setNetwork}
-                            setIsNetworkConstrained={setIsNetworkConstrained}
-                        />
+                        <>
+                            <ConditionalPreferences network={network} />
+                            <Preferences
+                                network={network}
+                                setNetwork={setNetwork}
+                                setIsNetworkConstrained={
+                                    setIsNetworkConstrained
+                                }
+                            />
+                        </>
                     )}
                 {!inputMode && !isNetworkConstrained && (
                     <Stack.Item align="start">
