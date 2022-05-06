@@ -132,8 +132,10 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
                                 },
                             }}
                             onClick={() => {
+                                if (editMode) {
+                                    resetConditionalPreferenceCard();
+                                }
                                 setEditMode(false);
-                                resetConditionalPreferenceCard();
                                 toggleHideDialog();
                             }}
                         >
