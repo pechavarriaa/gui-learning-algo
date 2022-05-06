@@ -1,7 +1,7 @@
 import { DefaultButton, Stack, StackItem, useTheme } from '@fluentui/react';
 import { FC } from 'react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { PreferenceVariables } from './ConditionalPreferenceCard';
+import { PreferenceVariables } from './ConditionalPreferences';
 import { OrderOfRelations } from './OrderOfRelations';
 
 export type ConditionalPreferencePresetProps = {

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import {
     Modal,
     mergeStyleSets,
@@ -11,12 +11,27 @@ import Network from '../definitions/Network';
 import { BooleanAlgebraRelations } from '../definitions/BooleanAlgebraRelations';
 import { ConditionalPreference } from './ConditionalPreference';
 import { ConditionalPreferencePreset } from './ConditionalPreferencePreset';
+import { PairDisjointSet, PreferenceVariables } from './ConditionalPreferences';
+import { PreferenceOrderByPair } from './ConditionalPreferences';
 
 export type ConditionalPreferencesCardProps = {
     network: Network;
     editMode: boolean;
     isOpen: boolean;
     toggleHideDialog: () => void;
+    preferenceVariables: PreferenceVariables;
+    setPreferenceVariables: (varPairs: PreferenceVariables) => void;
+    preferenceOrder: { [key: string]: string[] };
+    setPreferenceOrder: (preferenceOrder: { [key: string]: string[] }) => void;
+    pairDisjointSet: PairDisjointSet;
+    preferenceOrders?: PreferenceOrderByPair[];
+    setPairDisjointSet: (pairDisjointSet: PairDisjointSet) => void;
+    setPreferenceOrders: (
+        preferenceOrderByPair: PreferenceOrderByPair[]
+    ) => void;
+    resetConditionalPreferenceCard: () => void;
+    parentPairList: PreferenceVariables[];
+    setParentPairList: (parentPairList: PreferenceVariables[]) => void;
 };
 
 const theme = getTheme();
@@ -57,40 +72,133 @@ const contentStyles = mergeStyleSets({
     },
 });
 
-export type PreferenceVariables = {
-    firstVar: string;
-    secondVar: string;
-    thirdVar: string;
-    fourthVar: string;
-};
-
 export const ConditionalPreferencesCard: FC<
     ConditionalPreferencesCardProps
-> = ({ network, isOpen, editMode, toggleHideDialog }) => {
-    const [preferenceVariables, setPreferenceVariables] =
-        useState<PreferenceVariables>({
-            firstVar: 'a',
-            secondVar: 'b',
-            thirdVar: 'c',
-            fourthVar: 'd',
-        });
-
-    let initialPreferenceOrder: { [key: string]: string[] } = {};
-    for (const rel of Object.keys(BooleanAlgebraRelations)) {
-        initialPreferenceOrder[rel] = Object.keys(BooleanAlgebraRelations).map(
-            (rel) => rel.toString()
-        );
-    }
-
-    const [preferenceOrder, setPreferenceOrder] = useState(
-        initialPreferenceOrder
-    );
-
+> = ({
+    network,
+    isOpen,
+    editMode,
+    toggleHideDialog,
+    preferenceVariables,
+    setPreferenceVariables,
+    preferenceOrder,
+    setPreferenceOrder,
+    pairDisjointSet,
+    setPairDisjointSet,
+    preferenceOrders,
+    setPreferenceOrders,
+    resetConditionalPreferenceCard,
+    parentPairList,
+    setParentPairList,
+}) => {
     const setOrderOfRelations = (rel: string, orderOfRelations: string[]) => {
         setPreferenceOrder({
             ...preferenceOrder,
             ...{ [rel]: orderOfRelations },
         });
+    };
+
+    const varsAreDefined = () => {
+        const { firstVar, secondVar, thirdVar, fourthVar } =
+            preferenceVariables;
+        return (
+            firstVar !== '' &&
+            secondVar !== '' &&
+            thirdVar !== '' &&
+            fourthVar !== ''
+        );
+    };
+
+    const conditionalPreference = (rel: string) => {
+        return editMode ? (
+            <ConditionalPreferencePreset
+                varPairs={preferenceVariables}
+                relation={rel.toString()}
+                orderOfRelations={preferenceOrder[rel]}
+                setOrderOfRelations={setOrderOfRelations}
+            />
+        ) : (
+            <ConditionalPreference
+                varPairs={preferenceVariables}
+                networkVars={network.Variables}
+                setPreferenceVariables={setPreferenceVariables}
+                orderOfRelations={preferenceOrder[rel]}
+                setOrderOfRelations={setOrderOfRelations}
+            />
+        );
+    };
+
+    const conditionalPreferencePreset = (rel: string) => {
+        return varsAreDefined() ? (
+            <ConditionalPreferencePreset
+                varPairs={preferenceVariables}
+                relation={rel.toString()}
+                orderOfRelations={preferenceOrder[rel]}
+                setOrderOfRelations={setOrderOfRelations}
+            />
+        ) : null;
+    };
+
+    const saveChanges = () => {
+        if (!varsAreDefined()) {
+            alert('Variables must be set first');
+            return;
+        }
+        const { firstVar, secondVar, thirdVar, fourthVar } =
+            preferenceVariables;
+        if (firstVar === thirdVar && secondVar === fourthVar) {
+            alert('Pairs variables must be different');
+            return;
+        }
+        if (editMode) {
+            let newPreferenceOrders = [];
+            for (let x = 0; x < preferenceOrders!.length; x++) {
+                if (
+                    firstVar ===
+                        preferenceOrders![x].PreferenceVariables.firstVar &&
+                    secondVar ===
+                        preferenceOrders![x].PreferenceVariables.secondVar &&
+                    thirdVar ===
+                        preferenceOrders![x].PreferenceVariables.thirdVar &&
+                    fourthVar ===
+                        preferenceOrders![x].PreferenceVariables.fourthVar
+                ) {
+                    newPreferenceOrders.push({
+                        PreferenceVariables: preferenceVariables,
+                        PreferenceOrder: preferenceOrder,
+                    });
+                } else {
+                    newPreferenceOrders.push(preferenceOrders![x]);
+                }
+            }
+            setPreferenceOrders(newPreferenceOrders);
+            resetConditionalPreferenceCard();
+        } else {
+            if (
+                pairDisjointSet[`${thirdVar}-${fourthVar}`] ===
+                pairDisjointSet[`${firstVar}-${secondVar}`]
+            ) {
+                alert('Adding this pairs would form a cycle');
+                return;
+            }
+            setPairDisjointSet({
+                ...pairDisjointSet,
+                ...{
+                    [pairDisjointSet[`${thirdVar}-${fourthVar}`]]:
+                        pairDisjointSet[`${firstVar}-${secondVar}`],
+                },
+            });
+            const preferenceOrderByPair: PreferenceOrderByPair = {
+                PreferenceVariables: preferenceVariables,
+                PreferenceOrder: preferenceOrder,
+            };
+            const prevOrders =
+                preferenceOrders !== undefined ? preferenceOrders : [];
+            setPreferenceOrders([...prevOrders, preferenceOrderByPair]);
+            setParentPairList([...parentPairList, preferenceVariables]);
+            resetConditionalPreferenceCard();
+        }
+        toggleHideDialog();
     };
 
     return (
@@ -121,25 +229,15 @@ export const ConditionalPreferencesCard: FC<
             </div>
             <div className={contentStyles.body}>
                 {Object.keys(BooleanAlgebraRelations).map((rel) =>
-                    rel === 'Precedes' ? (
-                        <ConditionalPreference
-                            networkVars={network.Variables}
-                            setVariablePairs={setPreferenceVariables}
-                            orderOfRelations={preferenceOrder[rel]}
-                            setOrderOfRelations={setOrderOfRelations}
-                        />
-                    ) : (
-                        <ConditionalPreferencePreset
-                            varPairs={preferenceVariables}
-                            relation={rel.toString()}
-                            orderOfRelations={preferenceOrder[rel]}
-                            setOrderOfRelations={setOrderOfRelations}
-                        />
-                    )
+                    rel === 'Precedes'
+                        ? conditionalPreference(rel)
+                        : conditionalPreferencePreset(rel)
                 )}
             </div>
             <div className={contentStyles.footer}>
-                <PrimaryButton>Save changes</PrimaryButton>
+                <PrimaryButton onClick={saveChanges}>
+                    Save changes
+                </PrimaryButton>
             </div>
         </Modal>
     );

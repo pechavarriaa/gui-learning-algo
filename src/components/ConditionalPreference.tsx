@@ -5,62 +5,45 @@ import {
     StackItem,
     useTheme,
 } from '@fluentui/react';
-import { FC, useState, useEffect } from 'react';
+import { FC } from 'react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { PreferenceVariables } from './ConditionalPreferenceCard';
+import { PreferenceVariables } from './ConditionalPreferences';
 import { OrderOfRelations } from './OrderOfRelations';
 
 export type ConditionalPreferenceProps = {
+    varPairs: PreferenceVariables;
     networkVars: string[];
-    setVariablePairs: (varPairs: PreferenceVariables) => void;
+    setPreferenceVariables: (varPairs: PreferenceVariables) => void;
     orderOfRelations: string[];
     setOrderOfRelations: (rel: string, orderOfRelations: string[]) => void;
 };
 
 export const ConditionalPreference: FC<ConditionalPreferenceProps> = ({
+    varPairs,
     networkVars,
     orderOfRelations,
-    setVariablePairs,
+    setPreferenceVariables,
     setOrderOfRelations,
 }) => {
+    const { firstVar, secondVar, thirdVar, fourthVar } = varPairs;
     const varOptions = networkVars.slice(0, -1).map((value, i) => ({
         key: i,
         text: value,
     }));
-    const [firstVarIndex, setFirstVarIndex] = useState<number>(-1);
-    const [secondVarIndex, setSecondVarIndex] = useState<number>(-1);
-    const [thirdVarIndex, setThirdVarIndex] = useState<number>(-1);
-    const [fourthVarIndex, setFourthVarIndex] = useState<number>(-1);
-
-    useEffect(() => {
-        setVariablePairs({
-            firstVar: networkVars[firstVarIndex],
-            secondVar: networkVars[secondVarIndex],
-            thirdVar: networkVars[thirdVarIndex],
-            fourthVar: networkVars[fourthVarIndex],
-        });
-    }, [
-        setVariablePairs,
-        networkVars,
-        firstVarIndex,
-        secondVarIndex,
-        thirdVarIndex,
-        fourthVarIndex,
-    ]);
 
     const secondVarOptions = networkVars
         .map((value, i) => ({
             key: i,
             text: value,
         }))
-        .filter(({ key }) => key > firstVarIndex);
+        .filter(({ key }) => key > Math.max(0, networkVars.indexOf(firstVar)));
 
     const fourthVarOptions = networkVars
         .map((value, i) => ({
             key: i,
             text: value,
         }))
-        .filter(({ key }) => key > thirdVarIndex);
+        .filter(({ key }) => key > Math.max(0, networkVars.indexOf(thirdVar)));
 
     const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(false);
 
@@ -72,9 +55,14 @@ export const ConditionalPreference: FC<ConditionalPreferenceProps> = ({
                     placeholder="var"
                     options={varOptions}
                     styles={{ dropdown: { width: 60 } }}
+                    defaultSelectedKey={networkVars.indexOf(firstVar)}
                     onChange={(_, option) => {
-                        if (typeof option?.key === 'number')
-                            setFirstVarIndex(option?.key);
+                        if (typeof option?.key === 'number') {
+                            setPreferenceVariables({
+                                ...varPairs,
+                                ...{ firstVar: networkVars[option?.key] },
+                            });
+                        }
                     }}
                 />
             </StackItem>
@@ -83,10 +71,15 @@ export const ConditionalPreference: FC<ConditionalPreferenceProps> = ({
                 <Dropdown
                     placeholder="var"
                     options={secondVarOptions}
+                    defaultSelectedKey={networkVars.indexOf(secondVar)}
                     styles={{ dropdown: { width: 60 } }}
                     onChange={(_, option) => {
-                        if (typeof option?.key === 'number')
-                            setSecondVarIndex(option?.key);
+                        if (typeof option?.key === 'number') {
+                            setPreferenceVariables({
+                                ...varPairs,
+                                ...{ secondVar: networkVars[option?.key] },
+                            });
+                        }
                     }}
                 />
             </StackItem>
@@ -98,9 +91,14 @@ export const ConditionalPreference: FC<ConditionalPreferenceProps> = ({
                     placeholder="var"
                     options={varOptions}
                     styles={{ dropdown: { width: 60 } }}
+                    defaultSelectedKey={networkVars.indexOf(thirdVar)}
                     onChange={(_, option) => {
-                        if (typeof option?.key === 'number')
-                            setThirdVarIndex(option?.key);
+                        if (typeof option?.key === 'number') {
+                            setPreferenceVariables({
+                                ...varPairs,
+                                ...{ thirdVar: networkVars[option?.key] },
+                            });
+                        }
                     }}
                 />
             </StackItem>
@@ -110,9 +108,14 @@ export const ConditionalPreference: FC<ConditionalPreferenceProps> = ({
                     placeholder="var"
                     options={fourthVarOptions}
                     styles={{ dropdown: { width: 60 } }}
+                    defaultSelectedKey={networkVars.indexOf(fourthVar)}
                     onChange={(_, option) => {
-                        if (typeof option?.key === 'number')
-                            setFourthVarIndex(option?.key);
+                        if (typeof option?.key === 'number') {
+                            setPreferenceVariables({
+                                ...varPairs,
+                                ...{ fourthVar: networkVars[option?.key] },
+                            });
+                        }
                     }}
                 />
             </StackItem>
