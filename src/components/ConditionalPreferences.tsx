@@ -16,8 +16,6 @@ import { BooleanAlgebraRelations } from '../definitions/BooleanAlgebraRelations'
 
 export type ConditionalPreferencesProps = {
     network: Network;
-    parentPairList: PreferenceVariables[];
-    setParentPairList: (parentPairList: PreferenceVariables[]) => void;
 };
 
 export type PreferenceVariables = {
@@ -38,8 +36,6 @@ export type PairDisjointSet = {
 
 export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
     network,
-    parentPairList,
-    setParentPairList,
 }) => {
     let initialPairsDisjointSet: PairDisjointSet = {};
     for (let x = 0; x < network.Variables.length; x++) {
@@ -160,8 +156,6 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
                             resetConditionalPreferenceCard={
                                 resetConditionalPreferenceCard
                             }
-                            parentPairList={parentPairList}
-                            setParentPairList={setParentPairList}
                         />
                     </StackItem>
                     <StackItem>

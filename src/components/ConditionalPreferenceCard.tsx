@@ -30,8 +30,6 @@ export type ConditionalPreferencesCardProps = {
         preferenceOrderByPair: PreferenceOrderByPair[]
     ) => void;
     resetConditionalPreferenceCard: () => void;
-    parentPairList: PreferenceVariables[];
-    setParentPairList: (parentPairList: PreferenceVariables[]) => void;
 };
 
 const theme = getTheme();
@@ -88,8 +86,6 @@ export const ConditionalPreferencesCard: FC<
     preferenceOrders,
     setPreferenceOrders,
     resetConditionalPreferenceCard,
-    parentPairList,
-    setParentPairList,
 }) => {
     const setOrderOfRelations = (rel: string, orderOfRelations: string[]) => {
         setPreferenceOrder({
@@ -139,6 +135,31 @@ export const ConditionalPreferencesCard: FC<
         ) : null;
     };
 
+    const find = (varPair: string): string => {
+        if (pairDisjointSet[varPair] === varPair) {
+            return varPair;
+        }
+        let tempPair = find(pairDisjointSet[varPair]);
+        setPairDisjointSet({
+            ...pairDisjointSet,
+            ...{
+                [pairDisjointSet[pairDisjointSet[varPair]]]: tempPair,
+            },
+        });
+        return tempPair;
+    };
+
+    const merge = (firstPair: string, secondPair: string) => {
+        let firstPairParent = find(firstPair);
+        let secondPairParent = find(secondPair);
+        setPairDisjointSet({
+            ...pairDisjointSet,
+            ...{
+                [pairDisjointSet[secondPairParent]]: firstPairParent,
+            },
+        });
+    };
+
     const saveChanges = () => {
         if (!varsAreDefined()) {
             alert('Variables must be set first');
@@ -174,20 +195,20 @@ export const ConditionalPreferencesCard: FC<
             setPreferenceOrders(newPreferenceOrders);
             resetConditionalPreferenceCard();
         } else {
-            if (
-                pairDisjointSet[`${thirdVar}-${fourthVar}`] ===
-                pairDisjointSet[`${firstVar}-${secondVar}`]
-            ) {
+            const firstPair = `${firstVar}-${secondVar}`;
+            const secondPair = `${thirdVar}-${fourthVar}`;
+            if (pairDisjointSet[secondPair] !== secondPair) {
+                alert('Second pair already has a dependecy on another pair');
+                return;
+            }
+
+            if (find(secondPair) === find(firstPair)) {
                 alert('Adding this pairs would form a cycle');
                 return;
             }
-            setPairDisjointSet({
-                ...pairDisjointSet,
-                ...{
-                    [pairDisjointSet[`${thirdVar}-${fourthVar}`]]:
-                        pairDisjointSet[`${firstVar}-${secondVar}`],
-                },
-            });
+
+            merge(firstPair, secondPair);
+
             const preferenceOrderByPair: PreferenceOrderByPair = {
                 PreferenceVariables: preferenceVariables,
                 PreferenceOrder: preferenceOrder,
@@ -195,7 +216,6 @@ export const ConditionalPreferencesCard: FC<
             const prevOrders =
                 preferenceOrders !== undefined ? preferenceOrders : [];
             setPreferenceOrders([...prevOrders, preferenceOrderByPair]);
-            setParentPairList([...parentPairList, preferenceVariables]);
             resetConditionalPreferenceCard();
         }
         toggleHideDialog();

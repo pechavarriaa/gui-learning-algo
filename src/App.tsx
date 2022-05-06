@@ -6,7 +6,7 @@ import {
     IStackTokens,
     IStackStyles,
     ThemeProvider,
-    useTheme
+    useTheme,
 } from '@fluentui/react';
 import './App.css';
 import { darkTheme, lightTheme } from './themes';
@@ -42,6 +42,7 @@ export const App: FC = () => {
     const [inputMode, setInputMode] = useState<boolean>(true);
     const [isNetworkConstrained, setIsNetworkConstrained] =
         useState<boolean>(false);
+
     const setTheme = () => {
         setIsLightThemed(!isLightThemed);
     };
