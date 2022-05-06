@@ -18,7 +18,6 @@ import Network from './definitions/Network';
 import { createInitialNetworkRelations } from './utilities/createInitialNetwork';
 import { Graph } from './components/Graph';
 import { TableOfEquivalences } from './components/TableOfEquivalences';
-import { Preferences } from './components/Preferences';
 import { ConditionalPreferences } from './components/ConditionalPreferences';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
@@ -101,13 +100,6 @@ export const App: FC = () => {
                     !isNetworkConstrained && (
                         <>
                             <ConditionalPreferences network={network} />
-                            <Preferences
-                                network={network}
-                                setNetwork={setNetwork}
-                                setIsNetworkConstrained={
-                                    setIsNetworkConstrained
-                                }
-                            />
                         </>
                     )}
                 {!inputMode && !isNetworkConstrained && (
