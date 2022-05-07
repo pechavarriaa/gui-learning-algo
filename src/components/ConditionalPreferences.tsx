@@ -67,22 +67,19 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
 
     const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(false);
 
+    const initialPreferenceVariables = {
+        firstVar: '',
+        secondVar: '',
+        thirdVar: '',
+        fourthVar: '',
+    };
+
     const [preferenceVariables, setPreferenceVariables] =
-        useState<PreferenceVariables>({
-            firstVar: '',
-            secondVar: '',
-            thirdVar: '',
-            fourthVar: '',
-        });
+        useState<PreferenceVariables>(initialPreferenceVariables);
 
     const resetConditionalPreferenceCard = () => {
         setPreferenceOrder(initialPreferenceOrder);
-        setPreferenceVariables({
-            firstVar: '',
-            secondVar: '',
-            thirdVar: '',
-            fourthVar: '',
-        });
+        setPreferenceVariables(initialPreferenceVariables);
     };
 
     const setEditModeVariables = (
@@ -114,10 +111,31 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
             </StackItem>
             <StackItem>
                 <Stack>
-                    <StackItem
-                        align="start"
-                        styles={{ root: { marginBottom: '10px' } }}
-                    >
+                    <Stack horizontal>
+                        <StackItem
+                            align="start"
+                            styles={{ root: { marginBottom: '10px' } }}
+                        >
+                            <DefaultButton
+                                styles={{
+                                    root: {
+                                        margin: '5px',
+                                        padding: '2px 30px',
+                                        backgroundColor:
+                                            useTheme().palette.tealLight,
+                                    },
+                                }}
+                                onClick={() => {
+                                    if (editMode) {
+                                        resetConditionalPreferenceCard();
+                                    }
+                                    setEditMode(false);
+                                    toggleHideDialog();
+                                }}
+                            >
+                                Add new
+                            </DefaultButton>
+                        </StackItem>
                         <DefaultButton
                             styles={{
                                 root: {
@@ -127,17 +145,12 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
                                         useTheme().palette.tealLight,
                                 },
                             }}
-                            onClick={() => {
-                                if (editMode) {
-                                    resetConditionalPreferenceCard();
-                                }
-                                setEditMode(false);
-                                toggleHideDialog();
-                            }}
+                            onClick={() => {}}
                         >
-                            Add new
+                            Solve Network
                         </DefaultButton>
-                    </StackItem>
+                        <StackItem></StackItem>
+                    </Stack>
                     <StackItem>
                         <ConditionalPreferencesCard
                             key={preferenceOrders?.length}
