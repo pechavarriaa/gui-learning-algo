@@ -7,7 +7,7 @@ import {
 } from '@fluentui/react';
 import { FC } from 'react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { PreferenceVariables } from './ConditionalPreferences';
+import { PreferenceVariables } from './Preferences';
 import { OrderOfRelations } from './OrderOfRelations';
 
 export type ConditionalPreferenceProps = {

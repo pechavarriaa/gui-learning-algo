@@ -1,16 +1,15 @@
 import {
-    FontWeights,
-    Stack,
-    Text,
     DefaultButton,
+    Stack,
     useTheme,
+    Text,
+    FontWeights,
 } from '@fluentui/react';
-import { FC } from 'react';
-import { SortableList } from './SortableList';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { FC, useState } from 'react';
 import Network from '../definitions/Network';
-import { PreferenceByRelation } from './PreferenceByRelation';
+import Relationship from '../definitions/Relationship';
+import { SinglePreferences } from './SinglePreferences';
+import { ConditionalPreferences } from './ConditionalPreferences';
 import { solveNetwork } from '../utilities/solveNetwork';
 
 export type PreferencesProps = {
@@ -19,78 +18,76 @@ export type PreferencesProps = {
     setIsNetworkConstrained: (isNetworkConstrained: boolean) => void;
 };
 
+export type PreferenceVariables = {
+    firstVar: string;
+    secondVar: string;
+    thirdVar: string;
+    fourthVar: string;
+};
+
+export type PreferenceOrderByPair = {
+    PreferenceVariables: PreferenceVariables;
+    PreferenceOrder: { [key: string]: string[] };
+};
+
 export const Preferences: FC<PreferencesProps> = ({
     network,
     setNetwork,
     setIsNetworkConstrained,
 }) => {
+    const [preferenceOrders, setPreferenceOrders] = useState<
+        PreferenceOrderByPair[]
+    >([]);
+
+    const initialSinglePreferenceRelations = [
+        ...network.NetworkRelations,
+    ].splice(0, network.NetworkRelations.length / 2);
+
+    const [singlePreferenceRelations, setSinglePreferenceRelations] = useState<
+        Relationship[]
+    >(initialSinglePreferenceRelations);
+
     return (
-        <Stack horizontal gap={'30px'}>
-            <Stack>
-                <Stack.Item
-                    align="start"
+        <Stack gap={'5px'}>
+            <ConditionalPreferences
+                network={network}
+                preferenceOrders={preferenceOrders}
+                setPreferenceOrders={setPreferenceOrders}
+                singlePreferenceRelations={singlePreferenceRelations}
+                setSinglePreferenceRelations={setSinglePreferenceRelations}
+            />
+            <SinglePreferences 
+                singlePreferenceRelations={singlePreferenceRelations}
+                setSinglePreferenceRelations={setSinglePreferenceRelations}
+            />
+            <Stack.Item align="start">
+                <Text
+                    variant="mediumPlus"
                     styles={{
                         root: {
-                            marginBottom: '10px',
+                            fontWeight: FontWeights.semibold,
                         },
                     }}
                 >
-                    <Text
-                        variant="mediumPlus"
-                        styles={{
-                            root: {
-                                fontWeight: FontWeights.semibold,
-                            },
-                        }}
-                    >
-                        Preference of relations
-                    </Text>
-                </Stack.Item>
-                <Stack.Item align="start">
-                    <DndProvider backend={HTML5Backend}>
-                        <SortableList
-                            network={network}
-                            setNetwork={setNetwork}
-                        />
-                    </DndProvider>
-                </Stack.Item>
-            </Stack>
-            <Stack styles={{ root: { marginLeft: '20px' } }}>
-                <PreferenceByRelation
-                    network={network}
-                    setNetwork={setNetwork}
+                    Solve Network
+                </Text>
+            </Stack.Item>
+            <Stack.Item align="start">
+                <DefaultButton
+                    styles={{
+                        root: {
+                            margin: '5px',
+                            padding: '2px 30px',
+                            backgroundColor: useTheme().palette.tealLight,
+                        },
+                    }}
+                    text="Solve"
+                    onClick={() => {
+                        solveNetwork(network, setNetwork);
+                        setIsNetworkConstrained(true);
+                    }}
                 />
-            </Stack>
-            <Stack styles={{ root: { marginLeft: '20px' } }}>
-                <Stack.Item align="start">
-                    <Text
-                        variant="mediumPlus"
-                        styles={{
-                            root: {
-                                fontWeight: FontWeights.semibold,
-                            },
-                        }}
-                    >
-                        Solve Network
-                    </Text>
-                </Stack.Item>
-                <Stack.Item align="start">
-                    <DefaultButton
-                        styles={{
-                            root: {
-                                margin: '5px',
-                                padding: '2px 30px',
-                                backgroundColor: useTheme().palette.tealLight,
-                            },
-                        }}
-                        text="Solve"
-                        onClick={() => {
-                            solveNetwork(network, setNetwork);
-                            setIsNetworkConstrained(true);
-                        }}
-                    />
-                </Stack.Item>
-            </Stack>
+            </Stack.Item>
         </Stack>
     );
 };

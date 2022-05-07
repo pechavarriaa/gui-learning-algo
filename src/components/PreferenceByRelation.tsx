@@ -8,28 +8,28 @@ import {
 import { FC, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import Network from '../definitions/Network';
+import Relationship from '../definitions/Relationship';
 import { SortablePreferenceList } from './SortablePreferenceList';
 
 export type PreferenceByRelationProps = {
-    network: Network;
-    setNetwork: (network: Network) => void;
+    singlePreferenceRelations: Relationship[];
+    setSinglePreferenceRelations: (
+        singlePreferenceRelations: Relationship[]
+    ) => void;
 };
 
 export const PreferenceByRelation: FC<PreferenceByRelationProps> = ({
-    network,
-    setNetwork,
+    singlePreferenceRelations,
+    setSinglePreferenceRelations,
 }) => {
     const dropdownStyles: Partial<IDropdownStyles> = {
         dropdown: { width: 300 },
     };
 
-    const networkRels = [...network.NetworkRelations]
-        .splice(0, network.NetworkRelations.length / 2)
-        .map((rel, i) => ({
-            key: i,
-            text: `${rel.firstVar}-${rel.secondVar}`,
-        }));
+    const networkRels = singlePreferenceRelations.map((rel, i) => ({
+        key: i,
+        text: `${rel.firstVar}-${rel.secondVar}`,
+    }));
     const [selectedOption, setSelectedOption] = useState(-1);
     return (
         <Stack>
@@ -71,8 +71,12 @@ export const PreferenceByRelation: FC<PreferenceByRelationProps> = ({
                     {selectedOption >= 0 && (
                         <SortablePreferenceList
                             selectedIndex={selectedOption}
-                            network={network}
-                            setNetwork={setNetwork}
+                            singlePreferenceRelations={
+                                singlePreferenceRelations
+                            }
+                            setSinglePreferenceRelations={
+                                setSinglePreferenceRelations
+                            }
                         />
                     )}
                 </DndProvider>

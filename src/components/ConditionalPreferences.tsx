@@ -8,26 +8,21 @@ import {
     useTheme,
     Link,
 } from '@fluentui/react';
-
 import { useBoolean } from '@fluentui/react-hooks';
 import Network from '../definitions/Network';
 import { ConditionalPreferencesCard } from './ConditionalPreferenceCard';
 import { BooleanAlgebraRelations } from '../definitions/BooleanAlgebraRelations';
+import { PreferenceOrderByPair, PreferenceVariables } from './Preferences';
+import Relationship from '../definitions/Relationship';
 
 export type ConditionalPreferencesProps = {
     network: Network;
-};
-
-export type PreferenceVariables = {
-    firstVar: string;
-    secondVar: string;
-    thirdVar: string;
-    fourthVar: string;
-};
-
-export type PreferenceOrderByPair = {
-    PreferenceVariables: PreferenceVariables;
-    PreferenceOrder: { [key: string]: string[] };
+    preferenceOrders: PreferenceOrderByPair[];
+    setPreferenceOrders: (preferenceOrders: PreferenceOrderByPair[]) => void;
+    singlePreferenceRelations: Relationship[];
+    setSinglePreferenceRelations: (
+        singlePreferenceRelations: Relationship[]
+    ) => void;
 };
 
 export type PairDisjointSet = {
@@ -36,6 +31,10 @@ export type PairDisjointSet = {
 
 export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
     network,
+    preferenceOrders,
+    setPreferenceOrders,
+    singlePreferenceRelations,
+    setSinglePreferenceRelations
 }) => {
     let initialPairsDisjointSet: PairDisjointSet = {};
     for (let x = 0; x < network.Variables.length; x++) {
@@ -49,9 +48,6 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
     const [pairDisjointSet, setPairDisjointSet] = useState<PairDisjointSet>(
         initialPairsDisjointSet
     );
-
-    const [preferenceOrders, setPreferenceOrders] =
-        useState<PreferenceOrderByPair[]>([]);
 
     let initialPreferenceOrder: { [key: string]: string[] } = {};
     for (const rel of Object.keys(BooleanAlgebraRelations)) {
@@ -94,7 +90,7 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
     return (
         <Stack
             horizontalAlign="start"
-            gap={'10px'}
+            gap={'5px'}
             styles={{ root: { marginBottom: '10px' } }}
         >
             <StackItem>
@@ -136,24 +132,9 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
                                 Add new
                             </DefaultButton>
                         </StackItem>
-                        <DefaultButton
-                            styles={{
-                                root: {
-                                    margin: '5px',
-                                    padding: '2px 30px',
-                                    backgroundColor:
-                                        useTheme().palette.tealLight,
-                                },
-                            }}
-                            onClick={() => {}}
-                        >
-                            Solve Network
-                        </DefaultButton>
-                        <StackItem></StackItem>
                     </Stack>
                     <StackItem>
-                        <ConditionalPreferencesCard
-                            key={preferenceOrders?.length}
+                        <ConditionalPreferencesCard 
                             pairDisjointSet={pairDisjointSet}
                             setPairDisjointSet={setPairDisjointSet}
                             preferenceOrders={preferenceOrders}
@@ -169,6 +150,8 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
                             resetConditionalPreferenceCard={
                                 resetConditionalPreferenceCard
                             }
+                            singlePreferenceRelations={singlePreferenceRelations}
+                            setSinglePreferenceRelations={setSinglePreferenceRelations}
                         />
                     </StackItem>
                     <StackItem>

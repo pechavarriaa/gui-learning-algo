@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react';
 import { SortableItem } from './SortableItem';
-import Network from '../definitions/Network';
+import Relationship from '../definitions/Relationship';
 
 const style = {
     width: 300,
@@ -9,21 +9,18 @@ const style = {
 
 export type SortablePreferenceListProps = {
     selectedIndex: number;
-    network: Network;
-    setNetwork: (network: Network) => void;
+    singlePreferenceRelations: Relationship[];
+    setSinglePreferenceRelations: (
+        singlePreferenceRelations: Relationship[]
+    ) => void;
 };
 
 export const SortablePreferenceList: FC<SortablePreferenceListProps> = ({
     selectedIndex,
-    network,
-    setNetwork,
+    singlePreferenceRelations,
+    setSinglePreferenceRelations,
 }) => {
-    const netRels = [...network.NetworkRelations].splice(
-        0,
-        network.NetworkRelations.length / 2
-    );
-
-    const relationKeys = netRels[selectedIndex].relations.map(
+    const relationKeys = singlePreferenceRelations[selectedIndex].relations.map(
         (rel, i) => ({
             id: i,
             text: rel.toString().replace('_', ' '),
@@ -32,15 +29,15 @@ export const SortablePreferenceList: FC<SortablePreferenceListProps> = ({
 
     const moveCard = useCallback(
         (dragIndex: number, hoverIndex: number) => {
-            let { Variables, NetworkRelations } = { ...network };
-            let rels = NetworkRelations[selectedIndex].relations;
+            let newSinglePreferenceRelations = [...singlePreferenceRelations];
+            let rels = newSinglePreferenceRelations[selectedIndex].relations;
             let dragRel = rels[dragIndex];
             rels.splice(dragIndex, 1);
             rels.splice(hoverIndex, 0, dragRel);
-            NetworkRelations[selectedIndex].relations = rels;
-            setNetwork({ Variables, NetworkRelations });
+            newSinglePreferenceRelations[selectedIndex].relations = rels;
+            setSinglePreferenceRelations(newSinglePreferenceRelations);
         },
-        [setNetwork, network, selectedIndex]
+        [singlePreferenceRelations, selectedIndex, setSinglePreferenceRelations]
     );
 
     const renderCard = useCallback(
@@ -60,7 +57,7 @@ export const SortablePreferenceList: FC<SortablePreferenceListProps> = ({
 
     return (
         <>
-            <div style={style} key={selectedIndex}> 
+            <div style={style} key={selectedIndex}>
                 {relationKeys.map((card, i) => renderCard(card, i))}
             </div>
         </>

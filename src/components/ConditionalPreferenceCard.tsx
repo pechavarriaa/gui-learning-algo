@@ -11,8 +11,9 @@ import Network from '../definitions/Network';
 import { BooleanAlgebraRelations } from '../definitions/BooleanAlgebraRelations';
 import { ConditionalPreference } from './ConditionalPreference';
 import { ConditionalPreferencePreset } from './ConditionalPreferencePreset';
-import { PairDisjointSet, PreferenceVariables } from './ConditionalPreferences';
-import { PreferenceOrderByPair } from './ConditionalPreferences';
+import { PairDisjointSet } from './ConditionalPreferences';
+import { PreferenceVariables, PreferenceOrderByPair } from './Preferences';
+import Relationship from '../definitions/Relationship';
 
 export type ConditionalPreferencesCardProps = {
     network: Network;
@@ -30,6 +31,10 @@ export type ConditionalPreferencesCardProps = {
         preferenceOrderByPair: PreferenceOrderByPair[]
     ) => void;
     resetConditionalPreferenceCard: () => void;
+    singlePreferenceRelations: Relationship[];
+    setSinglePreferenceRelations: (
+        singlePreferenceRelations: Relationship[]
+    ) => void;
 };
 
 const theme = getTheme();
@@ -86,6 +91,8 @@ export const ConditionalPreferencesCard: FC<
     preferenceOrders,
     setPreferenceOrders,
     resetConditionalPreferenceCard,
+    singlePreferenceRelations,
+    setSinglePreferenceRelations,
 }) => {
     const setOrderOfRelations = (rel: string, orderOfRelations: string[]) => {
         setPreferenceOrder({
@@ -214,6 +221,12 @@ export const ConditionalPreferencesCard: FC<
                 PreferenceOrder: preferenceOrder,
             };
             setPreferenceOrders([...preferenceOrders, preferenceOrderByPair]);
+            setSinglePreferenceRelations(
+                singlePreferenceRelations.filter(
+                    (rel) =>
+                        rel.firstVar !== thirdVar || rel.secondVar !== fourthVar
+                )
+            );
             resetConditionalPreferenceCard();
         }
         toggleHideDialog();
