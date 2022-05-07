@@ -10,7 +10,7 @@ import Network from '../definitions/Network';
 import Relationship from '../definitions/Relationship';
 import { SinglePreferences } from './SinglePreferences';
 import { ConditionalPreferences } from './ConditionalPreferences';
-import { solveNetwork } from '../utilities/solveNetwork';
+import { solveNetwork } from '../utilities/solveNetworkWithPreferences';
 
 export type PreferencesProps = {
     network: Network;
@@ -56,7 +56,7 @@ export const Preferences: FC<PreferencesProps> = ({
                 singlePreferenceRelations={singlePreferenceRelations}
                 setSinglePreferenceRelations={setSinglePreferenceRelations}
             />
-            <SinglePreferences 
+            <SinglePreferences
                 singlePreferenceRelations={singlePreferenceRelations}
                 setSinglePreferenceRelations={setSinglePreferenceRelations}
             />
@@ -83,7 +83,12 @@ export const Preferences: FC<PreferencesProps> = ({
                     }}
                     text="Solve"
                     onClick={() => {
-                        solveNetwork(network, setNetwork);
+                        solveNetwork(
+                            network,
+                            setNetwork,
+                            singlePreferenceRelations,
+                            preferenceOrders
+                        );
                         setIsNetworkConstrained(true);
                     }}
                 />
