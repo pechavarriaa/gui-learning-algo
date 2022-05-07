@@ -24,7 +24,7 @@ export type ConditionalPreferencesCardProps = {
     preferenceOrder: { [key: string]: string[] };
     setPreferenceOrder: (preferenceOrder: { [key: string]: string[] }) => void;
     pairDisjointSet: PairDisjointSet;
-    preferenceOrders?: PreferenceOrderByPair[];
+    preferenceOrders: PreferenceOrderByPair[];
     setPairDisjointSet: (pairDisjointSet: PairDisjointSet) => void;
     setPreferenceOrders: (
         preferenceOrderByPair: PreferenceOrderByPair[]
@@ -173,23 +173,23 @@ export const ConditionalPreferencesCard: FC<
         }
         if (editMode) {
             let newPreferenceOrders = [];
-            for (let x = 0; x < preferenceOrders!.length; x++) {
+            for (let x = 0; x < preferenceOrders.length; x++) {
                 if (
                     firstVar ===
-                        preferenceOrders![x].PreferenceVariables.firstVar &&
+                        preferenceOrders[x].PreferenceVariables.firstVar &&
                     secondVar ===
-                        preferenceOrders![x].PreferenceVariables.secondVar &&
+                        preferenceOrders[x].PreferenceVariables.secondVar &&
                     thirdVar ===
-                        preferenceOrders![x].PreferenceVariables.thirdVar &&
+                        preferenceOrders[x].PreferenceVariables.thirdVar &&
                     fourthVar ===
-                        preferenceOrders![x].PreferenceVariables.fourthVar
+                        preferenceOrders[x].PreferenceVariables.fourthVar
                 ) {
                     newPreferenceOrders.push({
                         PreferenceVariables: preferenceVariables,
                         PreferenceOrder: preferenceOrder,
                     });
                 } else {
-                    newPreferenceOrders.push(preferenceOrders![x]);
+                    newPreferenceOrders.push(preferenceOrders[x]);
                 }
             }
             setPreferenceOrders(newPreferenceOrders);
@@ -213,9 +213,7 @@ export const ConditionalPreferencesCard: FC<
                 PreferenceVariables: preferenceVariables,
                 PreferenceOrder: preferenceOrder,
             };
-            const prevOrders =
-                preferenceOrders !== undefined ? preferenceOrders : [];
-            setPreferenceOrders([...prevOrders, preferenceOrderByPair]);
+            setPreferenceOrders([...preferenceOrders, preferenceOrderByPair]);
             resetConditionalPreferenceCard();
         }
         toggleHideDialog();

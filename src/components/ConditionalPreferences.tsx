@@ -51,7 +51,7 @@ export const ConditionalPreferences: FC<ConditionalPreferencesProps> = ({
     );
 
     const [preferenceOrders, setPreferenceOrders] =
-        useState<PreferenceOrderByPair[]>();
+        useState<PreferenceOrderByPair[]>([]);
 
     let initialPreferenceOrder: { [key: string]: string[] } = {};
     for (const rel of Object.keys(BooleanAlgebraRelations)) {
