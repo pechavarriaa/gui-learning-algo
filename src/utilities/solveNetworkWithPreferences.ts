@@ -11,7 +11,7 @@ export const solveNetwork = (
 ): Network => {
     let propagatedNetworkRelations: Array<Relationship> = [];
     let requestFailed = false;
-    fetch('https://localhost:5001/BooleanAlgebra/solveNetworkWithPreferences', {
+    fetch('http://localhost:5000/BooleanAlgebra/solveNetworkWithPreferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
